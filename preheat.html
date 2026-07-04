@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CmzPrep Rev 2</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif;
+    background: #0E0E1A;
+    color: #D4D4D8;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+.container { width: 100%; max-width: 960px; }
+.header { background: #1A1A2E; border: 1px solid #2D2D4E; border-radius: 8px; padding: 16px 24px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.header-left { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.header-icon { width: 36px; height: 36px; border-radius: 6px; background: #3B3B6E; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #B0B0FF; flex-shrink: 0; }
+.header-title { font-size: 18px; font-weight: bold; color: #E0E0F0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.header-sub { font-size: 10px; color: #8888AA; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.header-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.lang-btn { padding: 4px 14px; height: 30px; border: 1px solid #44446E; border-radius: 4px; background: #2D2D4E; color: #9999CC; font-size: 12px; cursor: pointer; white-space: nowrap; }
+.lang-btn:hover { background: #3B3B6E; border-color: #6363A0; }
+.lang-btn.active { background: #3B3B6E; color: #B0B0FF; border-color: #6363A0; }
+.back-link { padding: 4px 12px; height: 30px; border: 1px solid #44446E; border-radius: 4px; background: #4A2A2A; color: #FF9999; font-size: 12px; text-decoration: none; display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+.back-link:hover { background: #5A3030; border-color: #FF6666; }
+.grid { display: grid; grid-template-columns: 1fr 16px 1fr; margin-bottom: 12px; }
+.card { background:#252538; border-radius:8px; padding:18px; margin-bottom:12px; }
+.card h3 { font-size:14px; font-weight:bold; color:#fff; margin-bottom:10px; }
+.file-row { display:flex; gap:8px; }
+.file-row input { flex:1; height:38px; padding:0 10px; border:1px solid #3B3B5E; border-radius:5px; background:#2A2A42; color:#D4D4D8; font-size:13px; outline:none; min-width:0; }
+.file-row input::placeholder { color:#555577; }
+.file-row .btn { width:80px; height:38px; border:none; border-radius:5px; background:#3B3B6E; color:#B0B0FF; font-size:13px; font-weight:bold; cursor:pointer; flex-shrink:0; }
+.file-row .btn:hover { background:#4A4A8A; }
+.wim-info { margin-top:10px; padding:10px; border:1px solid #3B3B5E; border-radius:5px; background:#2A2A42; display:none; align-items:center; justify-content:space-between; gap:8px; }
+.wim-info.visible { display:flex; }
+.wim-name { font-size:13px; font-weight:600; color:#D4D4D8; }
+.wim-detail { font-size:11px; color:#8888AA; margin-top:2px; }
+.wim-clear { padding:4px 14px; height:28px; border:none; border-radius:4px; background:#3B3B5E; color:#8888AA; font-size:12px; cursor:pointer; flex-shrink:0; }
+.list { border:1px solid #3B3B5E; border-radius:5px; background:#2A2A42; max-height:110px; overflow-y:auto; }
+.list-item { padding:8px 12px; border-bottom:1px solid #333355; font-size:13px; color:#D4D4D8; cursor:pointer; word-break:break-all; }
+.list-item:last-child { border-bottom:none; }
+.list-item:hover { background:#33335A; }
+.list-item.selected { background:#3B3B6E; }
+.part-item { display:flex; align-items:center; gap:8px; }
+.part-item .icon { font-size:16px; flex-shrink:0; }
+.part-item .info { flex:1; min-width:0; }
+.part-item .name { font-size:13px; font-weight:600; color:#D4D4D8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.part-item .detail { font-size:10px; color:#8888AA; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.selected-part { margin-top:8px; padding:8px 12px; border-radius:5px; background:#2A2A4E; display:none; align-items:center; gap:6px; }
+.selected-part.visible { display:flex; }
+.selected-part .check { color:#7C7CFF; font-weight:bold; flex-shrink:0; }
+.selected-part .text { font-size:12px; color:#D4D4D8; }
+.lang-section { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+.lang-section .label { font-size:13px; color:#D4D4D8; white-space:nowrap; }
+.lang-select { height:30px; padding:0 8px; border:1px solid #3B3B5E; border-radius:4px; background:#2A2A42; color:#D4D4D8; font-size:12px; outline:none; cursor:pointer; }
+.install-btn { width:100%; height:50px; border:none; border-radius:6px; background:#3B3B6E; color:#D4D4D8; font-size:16px; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:10px; }
+.install-btn:hover { background:#4A4A8A; }
+.install-btn:disabled { opacity:0.4; cursor:not-allowed; }
+.progress-box { padding:12px; border:1px solid #3B3B5E; border-radius:5px; background:#1E1E30; display:none; }
+.progress-box.visible { display:block; }
+.progress-title { font-size:13px; font-weight:bold; color:#D4D4D8; text-align:center; margin-bottom:8px; }
+.phase-row { display:flex; justify-content:space-around; margin-bottom:8px; }
+.phase { text-align:center; font-size:12px; color:#8888AA; }
+.phase .icon { font-size:18px; }
+.phase.active .icon { color:#7C7CFF; }
+.phase.active { color:#7C7CFF; font-weight:bold; }
+.phase.done .icon { color:#4CAF50; }
+.phase.done { color:#4CAF50; font-weight:bold; }
+.progress-bar-bg { height:6px; border-radius:3px; background:#2A2A42; overflow:hidden; margin-bottom:6px; }
+.progress-bar-fill { height:100%; width:0%; border-radius:3px; background:#7C7CFF; transition:width .3s; }
+.progress-info { display:flex; justify-content:space-between; font-size:11px; }
+.progress-info .status { color:#8888AA; }
+.progress-info .pct { color:#7C7CFF; font-weight:bold; }
+.demo-log { margin-top:8px; padding:8px; border-radius:4px; background:#1A1A2E; border:1px solid #2D2D4E; max-height:100px; overflow-y:auto; font-family:Consolas,monospace; font-size:11px; color:#B0B0C0; line-height:1.6; word-break:break-all; }
+.footer { background:#1A1A2E; border:1px solid #2D2D4E; border-radius:8px; padding:10px 16px; display:flex; align-items:center; gap:6px; font-size:11px; color:#8888AA; }
+.footer .ver { margin-left:auto; font-size:9px; color:#555577; flex-shrink:0; }
+
+/* === Mobile === */
+@media (max-width: 720px) {
+    .grid { grid-template-columns: 1fr; }
+    body { padding: 10px; align-items: flex-start; padding-top: 14px; }
+    .header { flex-wrap: wrap; padding: 12px 14px; gap: 8px; }
+    .header-icon { width: 30px; height: 30px; font-size: 16px; }
+    .header-title { font-size: 15px; }
+    .header-sub { font-size: 9px; }
+    .header-right { flex-wrap: wrap; gap: 4px; }
+    .lang-btn { font-size: 10px; padding: 3px 8px; height: 26px; }
+    .back-link { font-size: 10px; padding: 3px 8px; height: 26px; }
+    .card { padding: 12px; }
+    .card h3 { font-size: 13px; }
+    .file-row input { font-size: 12px; height: 34px; }
+    .file-row .btn { font-size: 12px; height: 34px; width: 70px; }
+    .list-item { font-size: 12px; padding: 6px 10px; }
+    .part-item .name { font-size: 12px; }
+    .part-item .detail { font-size: 9px; }
+    .install-btn { font-size: 14px; height: 44px; }
+    .demo-log { font-size: 10px; max-height: 80px; }
+}
+@media (max-width: 400px) {
+    .header { flex-direction: column; align-items: flex-start; }
+    .header-right { width: 100%; }
+    .wim-info { flex-wrap: wrap; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+    <div class="header-left"><div class="header-icon">⚡</div><div><div class="header-title" id="headerTitle">CmzPrep Rev 2</div><div class="header-sub" id="headerSub">多语言版</div></div></div>
+    <div class="header-right">
+        <button class="lang-btn" onclick="setLang('zh-CN')">简体中文</button>
+        <button class="lang-btn" onclick="setLang('zh-TW')">繁體中文</button>
+        <button class="lang-btn" onclick="setLang('en')">English</button>
+        <a href="index.html" class="back-link">← <span id="btnBack">返回</span></a>
+    </div>
+</div>
+<div class="grid">
+<div>
+<div class="card">
+    <h3 id="lblWim">WIM 映像文件</h3>
+    <div class="file-row"><input type="text" id="wimPath" placeholder="请选择 Windows 映像 (.wim) 文件..." readonly><button class="btn" id="btnBrowse" onclick="demoBrowse()">浏览</button></div>
+    <div class="wim-info" id="wimInfo"><div><div class="wim-name" id="wimName">install.wim</div><div class="wim-detail" id="wimDetail">4.12 GB | 更新: 2026-01-15</div></div><button class="wim-clear" onclick="demoClear()" id="btnClear">清除</button></div>
+</div>
+<div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px;"><h3 style="margin:0;font-size:14px" id="lblPartition">目标分区</h3><button class="wim-clear" onclick="demoRefresh()" id="btnRefresh">刷新</button></div>
+    <div class="list" id="volumeList">
+        <div class="list-item selected" onclick="selectVolume(this)"><div class="part-item"><span class="icon">💾</span><div class="info"><div class="name">D: (DATA) 232.88 GB</div><div class="detail">NTFS | 空闲 128.45 GB / 共 232.88 GB</div></div></div></div>
+        <div class="list-item" onclick="selectVolume(this)"><div class="part-item"><span class="icon">💾</span><div class="info"><div class="name">E: (BACKUP) 465.76 GB</div><div class="detail">NTFS | 空闲 300.12 GB / 共 465.76 GB</div></div></div></div>
+    </div>
+    <div class="selected-part visible" id="selectedVol"><span class="check">✓</span><span class="text" id="volText">已选择: D: (DATA) - 232 GB</span></div>
+</div>
+<div class="card"><div class="lang-section"><span>🌐</span><span class="label" id="lblLang">语言</span><select class="lang-select" id="langSelect" onchange="setLangFromSelect(this.value)"><option value="zh-CN">简体中文</option><option value="zh-TW">繁體中文</option><option value="en">English</option></select></div></div>
+</div>
+<div class="grid-gap" style="display:none"></div>
+<div>
+<div class="card"><h3 id="lblIndex">选择映像索引</h3>
+    <div class="list" id="imageList">
+        <div class="list-item selected" onclick="selectImage(this)">Windows 11 专业版 <span style="font-size:10px;color:#8888AA">(Index 1)</span></div>
+        <div class="list-item" onclick="selectImage(this)">Windows 11 企业版 <span style="font-size:10px;color:#8888AA">(Index 2)</span></div>
+        <div class="list-item" onclick="selectImage(this)">Windows 11 教育版 <span style="font-size:10px;color:#8888AA">(Index 3)</span></div>
+    </div>
+</div>
+<div class="card">
+    <button class="install-btn" onclick="demoInstall()" id="btnInstall"><span>⚡</span><span id="lblInstall">开始安装</span></button>
+    <div class="progress-box" id="progressBox">
+        <div class="progress-title" id="progressTitle">部署状态</div>
+        <div class="phase-row">
+            <div class="phase active" id="phase1"><div class="icon">⟳</div><div id="lblPhase1">准备工作</div></div>
+            <div class="phase" id="phase2"><div class="icon">⏳</div><div id="lblPhase2">安装PE</div></div>
+            <div class="phase" id="phase3"><div class="icon">⏳</div><div id="lblPhase3">正式重装</div></div>
+        </div>
+        <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+        <div class="progress-info"><span class="status" id="progressStatus">等待开始...</span><span class="pct" id="progressPct">0%</span></div>
+        <div class="demo-log" id="demoLog"></div>
+    </div>
+</div>
+</div>
+</div>
+<div class="footer"><span>ℹ</span><span id="footerText">预热网站 · 用 HTML 展示 CmzPrep 界面布局</span><span class="ver">v1.0</span></div>
+</div>
+<script>
+const strings = {
+'zh-CN':{headerTitle:'CmzPrep Rev 2',headerSub:'多语言版',lblWim:'WIM 映像文件',wimPlaceholder:'请选择 Windows 映像 (.wim) 文件...',btnBrowse:'浏览',btnClear:'清除',wimName:'install.wim',wimDetail:'4.12 GB | 更新: 2026-01-15',lblPartition:'目标分区',btnRefresh:'刷新',vol1Name:'D: (DATA) 232.88 GB',vol1Detail:'NTFS | 空闲 128.45 GB / 共 232.88 GB',vol2Name:'E: (BACKUP) 465.76 GB',vol2Detail:'NTFS | 空闲 300.12 GB / 共 465.76 GB',volSelected:'已选择: D: (DATA) - 232 GB',lblLang:'语言',lblIndex:'选择映像索引',img1:'Windows 11 专业版',img2:'Windows 11 企业版',img3:'Windows 11 教育版',lblInstall:'开始安装',progressTitle:'部署状态',lblPhase1:'准备工作',lblPhase2:'安装PE',lblPhase3:'正式重装',progressStatus:'等待开始...',btnBack:'返回',footerText:'预热网站 · 用 HTML 展示 CmzPrep 界面布局',logStart:'开始部署...',logPrep:'准备工作: {0}%',logPrepDone:'准备工作完成',logPE:'安装PE: {0}%',logPEDone:'PE安装完成',logMain:'正式重装: {0}%',logMainDone:'重装完成！'},
+'zh-TW':{headerTitle:'CmzPrep Rev 2',headerSub:'多語言版',lblWim:'WIM 映像檔案',wimPlaceholder:'請選擇 Windows 映像 (.wim) 檔案...',btnBrowse:'瀏覽',btnClear:'清除',wimName:'install.wim',wimDetail:'4.12 GB | 更新: 2026-01-15',lblPartition:'目標磁碟分割',btnRefresh:'重新整理',vol1Name:'D: (DATA) 232.88 GB',vol1Detail:'NTFS | 可用 128.45 GB / 總計 232.88 GB',vol2Name:'E: (BACKUP) 465.76 GB',vol2Detail:'NTFS | 可用 300.12 GB / 總計 465.76 GB',volSelected:'已選擇: D: (DATA) - 232 GB',lblLang:'語言',lblIndex:'選擇映像索引',img1:'Windows 11 專業版',img2:'Windows 11 企業版',img3:'Windows 11 教育版',lblInstall:'開始安裝',progressTitle:'部署狀態',lblPhase1:'準備工作',lblPhase2:'安裝PE',lblPhase3:'正式重裝',progressStatus:'等待開始...',btnBack:'返回',footerText:'預熱網站 · 用 HTML 展示 CmzPrep 界面佈局',logStart:'開始部署...',logPrep:'準備工作: {0}%',logPrepDone:'準備工作完成',logPE:'安裝PE: {0}%',logPEDone:'PE安裝完成',logMain:'正式重裝: {0}%',logMainDone:'重裝完成！'},
+'en':{headerTitle:'CmzPrep Rev 2',headerSub:'Multi-language Edition',lblWim:'WIM Image File',wimPlaceholder:'Select Windows image (.wim) file...',btnBrowse:'Browse',btnClear:'Clear',wimName:'install.wim',wimDetail:'4.12 GB | Updated: 2026-01-15',lblPartition:'Target Partition',btnRefresh:'Refresh',vol1Name:'D: (DATA) 232.88 GB',vol1Detail:'NTFS | Free 128.45 GB / Total 232.88 GB',vol2Name:'E: (BACKUP) 465.76 GB',vol2Detail:'NTFS | Free 300.12 GB / Total 465.76 GB',volSelected:'Selected: D: (DATA) - 232 GB',lblLang:'Language',lblIndex:'Select Image Index',img1:'Windows 11 Pro',img2:'Windows 11 Enterprise',img3:'Windows 11 Education',lblInstall:'Start Install',progressTitle:'Deployment Status',lblPhase1:'Preparation',lblPhase2:'Install PE',lblPhase3:'Main Install',progressStatus:'Waiting to start...',btnBack:'Back',footerText:'Preheat site · Showcasing CmzPrep layout in HTML',logStart:'Starting deployment...',logPrep:'Preparation: {0}%',logPrepDone:'Preparation complete',logPE:'Install PE: {0}%',logPEDone:'PE install complete',logMain:'Main install: {0}%',logMainDone:'Install complete!'}
+};
+let currentLang='zh-CN',installing=false;
+function t(k){return strings[currentLang][k]||'['+k+']';}
+function updateUI(){
+['headerTitle','headerSub','lblWim','btnBrowse','btnClear','wimName','wimDetail','lblPartition','btnRefresh','lblLang','lblIndex','lblInstall','progressTitle','lblPhase1','lblPhase2','lblPhase3','progressStatus','footerText','btnBack'].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=t(id);});
+document.getElementById('wimPath').placeholder=t('wimPlaceholder');
+var v=document.querySelectorAll('#volumeList .list-item');
+if(v.length>=2){v[0].querySelector('.name').textContent=t('vol1Name');v[0].querySelector('.detail').textContent=t('vol1Detail');v[1].querySelector('.name').textContent=t('vol2Name');v[1].querySelector('.detail').textContent=t('vol2Detail');}
+document.querySelector('#selectedVol .text').textContent=t('volSelected');
+var im=document.querySelectorAll('#imageList .list-item');
+if(im.length>=3){for(var i=0;i<3;i++)im[i].childNodes[0].textContent=t('img'+(i+1))+' ';}
+document.querySelectorAll('.lang-btn').forEach(function(b){b.classList.remove('active');});
+var langIdx={'zh-CN':0,'zh-TW':1,en:2}[currentLang]||0;document.querySelectorAll('.lang-btn')[langIdx].classList.add('active');
+document.getElementById('langSelect').value=currentLang;
+}
+function setLang(c){currentLang=c;updateUI();}
+function setLangFromSelect(c){currentLang=c;updateUI();}
+function demoBrowse(){document.getElementById('wimInfo').classList.add('visible');document.getElementById('wimPath').value='F:\\Win11\\install.wim';document.getElementById('btnInstall').disabled=false;}
+function demoClear(){document.getElementById('wimInfo').classList.remove('visible');document.getElementById('wimPath').value='';document.getElementById('btnInstall').disabled=true;}
+function demoRefresh(){document.querySelector('.selected-part').classList.remove('visible');}
+function selectVolume(el){document.querySelectorAll('#volumeList .list-item').forEach(function(i){i.classList.remove('selected');});el.classList.add('selected');document.querySelector('.selected-part').classList.add('visible');}
+function selectImage(el){document.querySelectorAll('#imageList .list-item').forEach(function(i){i.classList.remove('selected');});el.classList.add('selected');}
+async function demoInstall(){
+if(installing)return;installing=true;
+document.getElementById('progressBox').classList.add('visible');document.getElementById('btnInstall').disabled=true;
+var log=document.getElementById('demoLog');
+function lm(m){var d=new Date();log.innerHTML+='<div class="line">['+d.toTimeString().slice(0,8)+'] '+m+'</div>';log.scrollTop=log.scrollHeight;}
+lm('ℹ '+t('logStart'));
+for(var i=0;i<=100;i+=10){if(i===0)setPhase(1);
+document.getElementById('progressFill').style.width=(i*0.30)+'%';document.getElementById('progressPct').textContent=(i*0.30).toFixed(1)+'%';
+document.getElementById('progressStatus').textContent=t('logPrep').replace('{0}',i);if(i%20===0)lm('  '+t('logPrep').replace('{0}',i));await new Promise(function(r){setTimeout(r,100);});}
+lm('✓ '+t('logPrepDone'));setPhase(2);
+for(var i=0;i<=100;i+=10){
+document.getElementById('progressFill').style.width=(30+i*0.30)+'%';document.getElementById('progressPct').textContent=(30+i*0.30).toFixed(1)+'%';
+document.getElementById('progressStatus').textContent=t('logPE').replace('{0}',i);if(i%20===0)lm('  '+t('logPE').replace('{0}',i));await new Promise(function(r){setTimeout(r,100);});}
+lm('✓ '+t('logPEDone'));setPhase(3);
+for(var i=0;i<=100;i+=10){
+document.getElementById('progressFill').style.width=(60+i*0.40)+'%';document.getElementById('progressPct').textContent=(60+i*0.40).toFixed(1)+'%';
+document.getElementById('progressStatus').textContent=t('logMain').replace('{0}',i);if(i%20===0)lm('  '+t('logMain').replace('{0}',i));await new Promise(function(r){setTimeout(r,100);});}
+document.getElementById('progressFill').style.width='100%';document.getElementById('progressPct').textContent='100%';
+document.getElementById('progressStatus').textContent=t('logMainDone');setPhaseDone();lm('✓ '+t('logMainDone'));installing=false;}
+function setPhase(n){
+document.querySelectorAll('.phase').forEach(function(p){p.classList.remove('active','done');});
+for(var i=1;i<n;i++){document.getElementById('phase'+i).classList.add('done');document.getElementById('phase'+i).querySelector('.icon').textContent='✓';}
+document.getElementById('phase'+n).classList.add('active');document.getElementById('phase'+n).querySelector('.icon').textContent='⟳';
+for(var i=n+1;i<=3;i++)document.getElementById('phase'+i).querySelector('.icon').textContent='⏳';}
+function setPhaseDone(){document.querySelectorAll('.phase').forEach(function(p){p.classList.remove('active');p.classList.add('done');p.querySelector('.icon').textContent='✓';});}
+updateUI();
+</script>
+</body>
+</html>
